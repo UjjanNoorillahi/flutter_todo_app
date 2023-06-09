@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-
+import 'package:hive_flutter/hive_flutter.dart';
 import '../components/dialog_box.dart';
 import '../components/todo_tasks.dart';
+import '../database.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -11,28 +12,39 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final _controller = TextEditingController();
+  final _mybox = Hive.box('myTasks');
+  TodoDatabase db = TodoDatabase();
 
-  List toDos = [
-    ["Exercise", false],
-    ["Eat Food", false]
-  ];
+  @override
+  void initState() {
+    if (_mybox.get("TODOS") == null) {
+      db.createInitial();
+    } else {
+      db.loadData();
+    }
+
+    super.initState();
+  }
+
+  final _controller = TextEditingController();
 
   // when checbox is tapped
 
   void checkBoxChanged(bool? value, int index) {
     setState(() {
-      toDos[index][1] = !toDos[index][1];
+      db.toDos[index][1] = !db.toDos[index][1];
     });
+    db.updateList();
   }
 
   void saveNewTask() {
     setState(() {
-      toDos.add(
+      db.toDos.add(
         [_controller.text, false],
       );
       Navigator.of(context).pop();
     });
+    db.updateList();
   }
 
   void createNewTask() {
@@ -50,11 +62,11 @@ class _MainPageState extends State<MainPage> {
 
   void deleteTodo(int index) {
     setState(() {
-      toDos.removeAt(index);
+      db.toDos.removeAt(index);
     });
+    db.updateList();
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -62,11 +74,11 @@ class _MainPageState extends State<MainPage> {
         elevation: 0,
       ),
       body: ListView.builder(
-        itemCount: toDos.length,
+        itemCount: db.toDos.length,
         itemBuilder: (context, index) {
           return TodoTask(
-            taskName: toDos[index][0],
-            checkTask: toDos[index][1],
+            taskName: db.toDos[index][0],
+            checkTask: db.toDos[index][1],
             onChanged: (value) {
               checkBoxChanged(value, index);
             },
