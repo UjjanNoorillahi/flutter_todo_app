@@ -44,7 +44,15 @@ class _MainPageState extends State<MainPage> {
       );
       Navigator.of(context).pop();
     });
+    _controller.clear();
     db.updateList();
+  }
+
+  void cancelTask() {
+    setState(() {
+      Navigator.of(context).pop();
+      _controller.clear();
+    });
   }
 
   void createNewTask() {
@@ -52,10 +60,7 @@ class _MainPageState extends State<MainPage> {
       context: context,
       builder: (context) {
         return DialogBox(
-          controller: _controller,
-          save: saveNewTask,
-          cancel: () => Navigator.of(context).pop(),
-        );
+            controller: _controller, save: saveNewTask, cancel: cancelTask);
       },
     );
   }

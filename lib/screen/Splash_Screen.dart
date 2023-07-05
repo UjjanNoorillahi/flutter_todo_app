@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.yellow,
       body: Center(
         child: Text("Welcome to the 'ToDo' App"),
       ),
